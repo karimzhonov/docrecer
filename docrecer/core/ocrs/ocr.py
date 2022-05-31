@@ -23,7 +23,7 @@ class Ocr:
                         point.x, point.y = width - point.x, height - point.y
         return page_data
 
-    def _reorder_recognized_data(self, data: RecognizedData):
+    def _reorder_recognized_data(self, data: RecognizedData) -> RecognizedData:
         for page in data:
             w1_p1, w1_p2 = 0, 0,
             w2_p1, w2_p2 = 0, 0

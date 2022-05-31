@@ -15,7 +15,6 @@ def load_dataset(path):
             file_path = os.path.join(in_path, f)
             image = cv2.imread(file_path)
             image = cv2.resize(image, (240, 320))
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             files[folder_name].append(image)
             for _ in range(3):
                 image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
@@ -34,5 +33,4 @@ def load_dataset(path):
     x_train = np.array(x_train)
     y_train = np.array(y_train)
     x_train, y_train = shuffle(x_train, y_train)
-    x_train = np.expand_dims(x_train, 3)
     return x_train, y_train

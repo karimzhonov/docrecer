@@ -10,6 +10,8 @@ class OCRS(Enum):
 SUPPORT_PASSPORTS = [
     'docrecer.passports.TajikistanPasport',
     'docrecer.passports.UzbekistanInternationalPassport',
+    'docrecer.passports.RussianPassport',
+    'docrecer.passports.BasePassport'
 ]
 
 SUPPORT_PATENTS = [

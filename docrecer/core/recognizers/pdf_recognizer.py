@@ -4,25 +4,25 @@ from docrecer.core.config import Config
 from docrecer.core.image import get_documents_from_image
 from docrecer.core.recognizers.base_recognizer import BaseRecognizer
 from docrecer.core.ocrs.response import RecognizedData
-from docrecer.core.ocrs import image_to_data
 from docrecer.converters import pdf2numpy
+from docrecer.core.ocrs.yandex_ocr import YandexOcr
 
 
 class PdfRecognizer(BaseRecognizer):
     def recognize(self, config: Config):
-        if isinstance(self.source_file, Path) and self.source_file.suffix == '.pdf':
-            list_of_doc = self._pdf_to_list_of_docs()
-            if config.load_ocr_data:
-                data = RecognizedData.load_ocr_data(self.get_ocr_data_path())
-            else:
-                data = image_to_data(list_of_doc, config)
-                if config.save_ocr_data:
-                    data.save_ocr_data(self.get_ocr_data_path())
-            if data:
-                for page in data:
-                    self._sort(page)
-        else:
+        if not isinstance(self.source_file, Path) and self.source_file.suffix == '.pdf':
             raise ValueError(f'Invalid pdf file {self.source_file}')
+
+        if config.load_ocr_data:
+            data = RecognizedData.load_ocr_data(self.get_ocr_data_path())
+        else:
+            list_of_doc = self._pdf_to_list_of_docs()
+            data = RecognizedData([YandexOcr(config)(doc)[0] for doc in logger.range(list_of_doc, desc='Yandex ocr')])
+            if config.save_ocr_data:
+                data.save_as_json(self.get_ocr_data_path())
+        if data:
+            for page in data:
+                self._sort(page)
 
     def _pdf_to_list_of_docs(self):
         pages = pdf2numpy(self.source_file)

@@ -16,13 +16,6 @@ class DocumentClasificator:
 
     def __init__(self, model_name: str = 'model_1',
                  optimizer: str = 'adam', loss: str = 'categorical_crossentropy', metric: str = 'accuracy'):
-        """
-        Letter Recognition
-        :param model_name: Model name to save
-        :param optimizer: Sequential optimizer
-        :param loss: Sequential loss
-        :param metric: Sequential metric
-        """
         self.optimizer = optimizer
         self.loss = loss
         self.metric = metric
@@ -62,7 +55,7 @@ class DocumentClasificator:
         self.word_index = list(set(y_train))
         return to_categorical(np.array([self.word_index.index(value) for value in y_train]), len(self.word_index))
 
-    def train(self, x_train: np.array, y_train: np.array, batch_size: int = 1, epochs: int = 20,
+    def train(self, x_train: np.array, y_train: np.array, batch_size: int = 32, epochs: int = 3,
               validation_split: float = 0.2, *, save: bool = True, summery=False, workers=1, use_multiprocessing=True):
         """Train model and save"""
         logger.bigtext('Train Network')

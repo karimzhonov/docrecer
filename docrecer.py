@@ -11,7 +11,7 @@ app = Typer()
 
 
 @app.command()
-def start(
+def recognize(
         file_path: str = Option(None, help='path to file pdf or photo'),
         config_path: str = Option(None, help='path to config.json'),
         input_path: str = Option(None, help="path to input dir, if not given equel config['input_path']"),
@@ -61,7 +61,6 @@ def start(
         documents_recognizer(config)
     else:
         logger.error('input_path and output_path must be given')
-
 
 if __name__ == '__main__':
     app()

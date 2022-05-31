@@ -11,17 +11,12 @@ class RecognizedData(Serializer):
     def __iter__(self):
         return iter(self.pages)
 
-    def save_ocr_data(self, path):
-        path = Path(path)
-        with open(path, 'w', encoding='utf-8') as file:
-            json.dump(self.to_json(), file, indent=4, ensure_ascii=False)
-
     @classmethod
     def load_ocr_data(cls, path):
         path = Path(path)
         if not path.exists():
             raise FileNotFoundError(f'Load ocr File not founded {path}')
-        with open(path, 'r', encoding='utf-8') as file:
+        with open(path, 'r') as file:
             pages = json.load(file)
             return cls._parse_data(pages)
 
@@ -52,6 +47,9 @@ class RecognizedData(Serializer):
     def __len__(self):
         return 0 if self.pages is None else len(self.pages)
 
+    def __getitem__(self, item):
+        return self.pages[item]
+
 
 @dataclass
 class _Point(Serializer):
@@ -73,6 +71,9 @@ class _Word(Serializer):
     def __len__(self):
         return 0 if self.points is None else len(self.points)
 
+    def __getitem__(self, item):
+        return self.points[item]
+
 
 @dataclass
 class _Row(Serializer):
@@ -87,6 +88,9 @@ class _Row(Serializer):
     def __len__(self):
         return 0 if self.words is None else len(self.words)
 
+    def __getitem__(self, item):
+        return self.words[item]
+
 
 @dataclass
 class PageData(Serializer):
@@ -94,6 +98,7 @@ class PageData(Serializer):
     text: str = ''
     width: int = 0
     height: int = 0
+    entities: list = None
 
     def add(self, obj):
         if self.rows is None:
@@ -102,3 +107,6 @@ class PageData(Serializer):
 
     def __len__(self):
         return 0 if self.rows is None else len(self.rows)
+
+    def __getitem__(self, item):
+        return self.rows[item]

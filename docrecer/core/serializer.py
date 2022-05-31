@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 
 class Serializer:
@@ -7,8 +8,7 @@ class Serializer:
         return serializer(self.__dict__)
 
     def save_as_json(self, path):
-        with open(path, 'w') as file:
-            json.dump(self.to_json(), file, indent=4, ensure_ascii=False)
+        Path(path).write_text(json.dumps(self.to_json(), indent=4, ensure_ascii=False))
 
 
 def serializer(obj):

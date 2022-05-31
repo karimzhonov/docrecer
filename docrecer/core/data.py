@@ -42,10 +42,10 @@ class Data(Serializer):
             setattr(self, key, None)
 
     @staticmethod
-    def _delete_chars(text: str, chars='!@#$%^&*()`~[]{}№'):
+    def _delete_chars(text: str, chars='!@#$%^&*()`~[]{}№«'):
         for char in chars:
             text = text.replace(char, '')
-        return text
+        return text.capitalize()
 
     @classmethod
     def load_from_data(cls, data):
@@ -130,5 +130,5 @@ class Data(Serializer):
 def is_other_document(data):
     keywords = (
         'чек', 'платеж', 'плательщик', 'перевод', 'опись', 'расписка', 'уведомлен', 'visas', 'viza', 'владелец',
-        'гражданина', 'this', 'анкета', 'анкеты', 'соискателя', 'работник', 'заполнить', 'полис')
+        'гражданина', 'this', 'анкета', 'анкеты', 'соискателя', 'работник', 'заполнить', 'полис', 'ЗАЯВЛЕНИЕ')
     return is_include(keywords, data.text)
