@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from docrecer.core.data import Data
-from docrecer.core.base.base_patent import PatentData
-from docrecer.core.base.base_passport import PassportData
-from docrecer.core.base.base_migration_card import MigrationCardData
-from docrecer.core.base.base_snils import SnilsData
+from .data import Data
+from .base.base_patent import PatentData
+from .base.base_passport import PassportData
+from .base.base_migration_card import MigrationCardData
+from .base.base_snils import SnilsData
 
 
 @dataclass

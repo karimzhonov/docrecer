@@ -1,10 +1,10 @@
 import cv2
 from pathlib import Path
-from docrecer.core.ocrs.response import RecognizedData
-from docrecer.core.recognizers.base_recognizer import BaseRecognizer
-from docrecer.core.image import get_documents_from_image
-from docrecer.core.ocrs.yandex_ocr import YandexOcr
-from docrecer.core.logger import logger
+from ..ocrs.response import RecognizedData
+from ..recognizers.base_recognizer import BaseRecognizer
+from ..image import get_documents_from_image
+from ..ocrs.yandex_ocr import YandexOcr
+from ..logger import logger
 
 
 class ImageRecognizer(BaseRecognizer):

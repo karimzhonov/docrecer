@@ -16,6 +16,7 @@ logger.bigtext('Document Recognizer')
 
 def documents_recognizer(config: Config):
     # Create folder for results
+    if isinstance(config.output_path, str): config.output_path = _Path(config.output_path)
     config.output_path.mkdir()
     logger.debug(f'Maked dir {config.output_path}')
     # Map input path
@@ -24,8 +25,12 @@ def documents_recognizer(config: Config):
         out_path = _Path(config.output_path)
         # Rename outpath
         for i, part in enumerate(in_path.parts):
-            if not config.input_path.parts[i] == part:
-                out_path.joinpath(part)
+            try:
+                _part = config.input_path.parts[i]
+                if not _part == part:
+                    out_path = out_path.joinpath(part)
+            except IndexError:
+                out_path = out_path.joinpath(part)
         # Mkdir
         for f in folders:
             out_path.joinpath(f).mkdir()

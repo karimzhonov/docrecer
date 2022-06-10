@@ -2,9 +2,10 @@ import numpy as np
 from pathlib import Path
 from typing import Union
 
-from docrecer import logger, Config
-from docrecer.core.personal import PersonalData
-from docrecer.core.ocrs.response import PageData
+from ..logger import logger
+from ..config import Config
+from ..personal import PersonalData
+from ..ocrs.response import PageData
 
 
 class BaseRecognizer:
@@ -31,19 +32,19 @@ class BaseRecognizer:
             raise ValueError(f'output_dir is None')
         return self.output_dir.joinpath(self.source_file.parts[-1])
 
-    def _sort(self, data: PageData):
-        if self.persanal_data.passport.is_passport_data(data):
-            logger.debug('Load Passport files')
-            self.persanal_data.passport.update(**self.persanal_data.passport.load_from_data(data))
+    def _sort(self, data: PageData, config: Config, image):
+        if self.persanal_data.passport.is_passport_data(data) or (len(data.entities) > 0):
+            self.persanal_data.passport.update(**self.persanal_data.passport.load_from_data(data, config, image))
         elif self.persanal_data.patent.is_patent_data(data):
             logger.debug('Load Patent files')
-            self.persanal_data.patent.update(**self.persanal_data.patent.load_from_data(data))
+            self.persanal_data.patent.update(**self.persanal_data.patent.load_from_data(data, config, image))
         elif self.persanal_data.migration_card.is_migration_card_data(data):
             logger.debug('Load Migration card files')
-            self.persanal_data.migration_card.update(**self.persanal_data.migration_card.load_from_data(data))
+            self.persanal_data.migration_card.update(
+                **self.persanal_data.migration_card.load_from_data(data, config, image))
         elif self.persanal_data.snils.is_snils_data(data):
             logger.debug('Load Snils files')
-            self.persanal_data.snils.update(**self.persanal_data.snils.load_from_data(data))
+            self.persanal_data.snils.update(**self.persanal_data.snils.load_from_data(data, config, image))
         else:
             logger.warning(f'Can not get data from document')
 

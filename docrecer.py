@@ -18,12 +18,31 @@ def recognize(
         output_path: str = Option(None, help="path to output dir if not given equel config['output_path']"),
         yandex_ocr_api_key: str = Option(None, help="Api Key for yandex ocr"),
         tesseract_cmd: str = Option(None, help='Path to tesseract.exe'),
-        tesseract_config: str = Option(None, help='Tesseract config'),
-        tesseract_langs: str = Option(None, help='Tesseract langs'),
         ocr_name: str = Option(None, help='Ocr name (tesseract, yandex)'),
         log_level: int = Option(0, help="0 - ALL, 1 - warning, debug, error, 2 - warning, error, 3 - error")
 ):
-    """Main function"""
+    """
+    Document recognizer CLI
+    User guide for single file
+
+    # Yandex Ocr
+
+    python docrecer.py --file-path <path_to (pdf or image)> --output-path <path_to_save> --ocr-name yandex --yandex-ocr-api-key <Api key>
+
+    # PyTesseract Ocr (confidence low)
+
+    python docrecer.py --file-path <path_to (pdf or image)> --output-path <path_to_save> --ocr-name tesseract --tesseract_cmd <path_to_tesseract.exe>
+
+    User guide for many files
+
+    # Yandex ocr
+
+    python docrecer.py --input-path <path_to_dir_which_include_images_or_pdf> --output-path <path_to_save> --ocr-name yandex --yandex-ocr-api-key <Api key>
+
+    # PyTesseract Ocr (confidence low)
+
+    python docrecer.py --input-path <path_to_dir_which_include_images_or_pdf> --output-path <path_to_save> --ocr-name tesseract --tesseract_cmd <path_to_tesseract.exe>
+    """
     config = {}
     # Read config
     if config_path is not None:
@@ -43,10 +62,6 @@ def recognize(
         config.yandex_ocr_api_key = yandex_ocr_api_key
     if tesseract_cmd:
         config.tesseract_cmd = tesseract_cmd
-    if tesseract_config:
-        config.tesseract_config = tesseract_config
-    if tesseract_langs:
-        config.tesseract_langs = tesseract_langs
     if ocr_name:
         config.ocr_name = ocr_name
     logger.set_level(log_level)

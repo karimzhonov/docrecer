@@ -3,14 +3,8 @@ from .tesseract_ocr import TesseractOcr
 from docrecer.conf import OCRS
 
 
-def image_to_data(images, config):
-    """
-    Image recognition
-    :param images: np.array Image
-    :param config: config.json as ConfigData
-    :return:
-    """
+def image_to_data(images, config, model = None):
     if config.ocr_name == OCRS.YANDEX:
-        return YandexOcr(config)(images)
+        return YandexOcr(config)(images, model)
     elif config.ocr_name == OCRS.TESSERACT:
         return TesseractOcr(config)(images)

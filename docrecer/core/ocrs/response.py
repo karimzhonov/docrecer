@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from dataclasses import dataclass
-from docrecer.core.serializer import Serializer
+from ..serializer import Serializer
 
 
 @dataclass
@@ -9,6 +9,7 @@ class RecognizedData(Serializer):
     pages: list = None
 
     def __iter__(self):
+        if self.pages is None: self.pages = []
         return iter(self.pages)
 
     @classmethod

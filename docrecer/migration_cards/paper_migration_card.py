@@ -20,7 +20,7 @@ class PaperMigrationCard(MigrationCardData):
         self.serial = self._delete_chars(_serial_number[:4])
         self.number = self._delete_chars(_serial_number[4:])
 
-    def extract_data(self, data):
+    def extract_data(self, data, config, image):
         self._set_coordinate(data)
         if self._word_height is None: return
         self._extrac_serial_number(data)

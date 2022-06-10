@@ -17,9 +17,7 @@ config = Config(ocr_name=OCRS.YANDEX,
                 yandex_ocr_api_key='APi key')
 # Config for PyTesseract
 config = Config(ocr_name=OCRS.TESSERACT,
-                tesseract_cmd=r'<path_to_tesseract.exe>',
-                tesseract_config='',
-                tesseract_langs='eng+rus')
+                tesseract_cmd=r'<path_to_tesseract.exe>')
 # Start
 _json = file_recognizer('<input_path_to_file> or np.array', config, 'outpath_to_save')
 

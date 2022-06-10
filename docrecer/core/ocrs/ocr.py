@@ -1,5 +1,6 @@
-from docrecer.core.config import Config
 from .response import RecognizedData, PageData
+from ..config import Config
+from ..logger import logger
 
 
 class Ocr:
@@ -10,8 +11,8 @@ class Ocr:
     @staticmethod
     def __reorder_page_data(page_data: PageData, mode: str):
         """mode = up, down, left"""
+        logger.info(f'Reordering Yandex ocr data with mode - {mode}')
         height, width = page_data.height, page_data.width
-
         for item in page_data.rows:
             for word in item.words:
                 for point in word.points:
@@ -37,7 +38,7 @@ class Ocr:
             # If words not founded
             if w1_p1 == 0 or w2_p1 == 0: continue
             # Checkiing rotate
-            if abs(w1_p1.y - w2_p1.y) < 10:
+            if abs(w1_p1.y - w2_p1.y) < 20:
                 # ---
                 if w1_p1.x > w2_p1.x:
                     # to left

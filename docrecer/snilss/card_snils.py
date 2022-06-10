@@ -11,7 +11,7 @@ class CardSnils(SnilsData):
         if not _text: return
         self.number = self._delete_chars(_text)
 
-    def extract_data(self, data):
+    def extract_data(self, data, config, image):
         self._set_coordinate(data)
         if self._word_height is None: return
         self._extrac_number(data)

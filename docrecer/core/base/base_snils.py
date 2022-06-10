@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from docrecer.core.data import Data, is_other_document
-from docrecer.core.ocrs.response import PageData
-from docrecer.utils import is_include
-from docrecer.conf import SUPPORT_SNILSS
+from ..data import Data, is_other_document
+from ..ocrs.response import PageData
+from ...utils import is_include
+from ...conf import SUPPORT_SNILSS
 
 
 @dataclass

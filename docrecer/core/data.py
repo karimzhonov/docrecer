@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from docrecer.core.serializer import Serializer
-from docrecer.utils import is_include, import_class
-
+from .serializer import Serializer
+from ..utils import is_include, import_class
+from .logger import logger
 
 class Data(Serializer):
     _top = 0
@@ -32,9 +32,9 @@ class Data(Serializer):
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
-            if isinstance(value, Data):
+            if isinstance(value, Serializer):
                 getattr(self, key).update(**value.to_json())
-            if value is not None:
+            if value:
                 setattr(self, key, value)
 
     def reset(self):
@@ -48,21 +48,21 @@ class Data(Serializer):
         return text.capitalize()
 
     @classmethod
-    def load_from_data(cls, data):
+    def load_from_data(cls, data, config, image):
         instance = cls()
         for _class_path in cls._support_classes:
             _class = import_class(_class_path)
             if getattr(_class, 'is_it')(data):
                 instance = _class()
-                instance.extract_data(data)
+                instance.extract_data(data, config, image)
                 return instance.to_json()
         return instance.to_json()
 
     @classmethod
     def is_it(cls, data):
-        return is_include(cls._is_it_keywords, data.text)
+        return is_include(cls._is_it_keywords, ''.join(data.text.split(' ')))
 
-    def extract_data(self, data):
+    def extract_data(self, data, config, image):
         pass
 
     @staticmethod
@@ -71,7 +71,7 @@ class Data(Serializer):
             if is_include([word], item.text):
                 return item.words[0].points[0]
 
-    def _find_row_same_word(self, word, data, word_height=None, min_height=None):
+    def _find_row_same_word(self, word, data, word_height=None, min_height=None, enter_avaible=False):
         """Find text in one area with word"""
         if word_height is None: word_height = self._word_height
         p1 = self._get_word_coordinate(word, data)
@@ -88,15 +88,17 @@ class Data(Serializer):
                                 _text.append(_word.text)
                         else:
                             _text.append(_word.text)
+            if _text and enter_avaible: _text[-1] += '\n'
         _text = ' '.join(_text)
         _text = _text[1:] if _text.startswith(' ') else _text
         return _text
 
     def _validate_date(self, text):
         text = text[:-1] if text.endswith('.') else text
+        text = text.replace(' ', '.').replace(',', '.')
         try:
             return self._delete_chars(str(datetime.strptime(text, '%d.%m.%Y').date()))
-        except ValueError:
+        except ValueError as _exp:
             return None
 
     def _validate_number(self, text):
@@ -104,8 +106,14 @@ class Data(Serializer):
             return self._delete_chars(str(int(text)))
         except ValueError:
             pass
+    @staticmethod
+    def _validate_gender(text):
+        if 'm' in text.lower():
+            return 'Male'
+        elif 'f' in text.lower():
+            return 'Female'
 
-    def _find_row_by_delta_height(self, delta_height, data, word_height: int = None, min_height=None):
+    def _find_row_by_delta_height(self, delta_height, data, word_height: int = None, min_height=None, enter_avaible = False):
         """
         Find text by delta height from self._top
         word_height - height of area where extrac text
@@ -123,12 +131,13 @@ class Data(Serializer):
                             _text.append(word.text)
                     else:
                         _text.append(word.text)
-
+            if enter_avaible and _text:
+                _text[-1] += '\n'
         return ' '.join(_text)
 
 
 def is_other_document(data):
     keywords = (
         'чек', 'платеж', 'плательщик', 'перевод', 'опись', 'расписка', 'уведомлен', 'visas', 'viza', 'владелец',
-        'гражданина', 'this', 'анкета', 'анкеты', 'соискателя', 'работник', 'заполнить', 'полис', 'ЗАЯВЛЕНИЕ')
+        'гражданина', 'this', 'анкета', 'анкеты', 'соискателя', 'работник', 'заполнить', 'полис', 'ЗАЯВЛЕНИЕ', 'банк')
     return is_include(keywords, data.text)

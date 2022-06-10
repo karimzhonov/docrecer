@@ -3,11 +3,12 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import pickle
 import numpy as np
-from tensorflow.python.keras import Sequential, layers
+from collections import defaultdict
+from tensorflow.python.keras import Sequential, layers, losses
 from tensorflow.python.keras.models import load_model
 from keras.utils.np_utils import to_categorical
 
-from docrecer.core.logger import logger
+from ..logger import logger
 
 
 class DocumentClasificator:
@@ -15,7 +16,8 @@ class DocumentClasificator:
     word_index = []
 
     def __init__(self, model_name: str = 'model_1',
-                 optimizer: str = 'adam', loss: str = 'categorical_crossentropy', metric: str = 'accuracy'):
+                 optimizer: str = 'adam', loss: str = losses.CategoricalCrossentropy(),
+                 metric: str = 'accuracy'):
         self.optimizer = optimizer
         self.loss = loss
         self.metric = metric
@@ -39,37 +41,41 @@ class DocumentClasificator:
     @staticmethod
     def _get_layers(input_shape, output_shape, output_activation='softmax'):
         return [
-            layers.Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=input_shape),
-            layers.MaxPooling2D((2, 2), strides=2),
+            layers.Conv2D(16, (3, 3), padding='same', activation='relu', input_shape=input_shape),
+            layers.MaxPooling2D(),
+            layers.Conv2D(32, (3, 3), padding='same', activation='relu'),
+            layers.MaxPooling2D(),
             layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
-            layers.MaxPooling2D((2, 2), strides=2),
+            layers.MaxPooling2D(),
             layers.Flatten(),
-            layers.Dense(1024, activation='relu'),
-            layers.Dropout(0.3),
+            layers.Dense(512, activation='relu'),
             layers.Dense(128, activation='relu'),
-            layers.Dropout(0.2),
-            layers.Dense(output_shape, activation=output_activation, name='Output')
+            layers.Dense(output_shape, name='Output',activation=output_activation)
         ]
 
-    def _refacrtor_y_train(self, y_train):
-        self.word_index = list(set(y_train))
+    def refacrtor_y_train(self, y_train):
+        _word_index = defaultdict(list)
+        for i, y in enumerate(y_train):
+            _word_index[y].append(i)
+        _word_index = sorted(_word_index.keys(), key=lambda k: k)
+        self.word_index = list(_word_index)
         return to_categorical(np.array([self.word_index.index(value) for value in y_train]), len(self.word_index))
 
-    def train(self, x_train: np.array, y_train: np.array, batch_size: int = 32, epochs: int = 3,
+    def train(self, x_train: np.array, y_train: np.array, batch_size: int = 1, epochs: int = 3,
               validation_split: float = 0.2, *, save: bool = True, summery=False, workers=1, use_multiprocessing=True):
         """Train model and save"""
         logger.bigtext('Train Network')
         logger.info(f'Input - {x_train.shape}, Output - {y_train.shape}')
         input_shape = x_train[0].shape
         output_shape = len(set(y_train))
-        y_train = self._refacrtor_y_train(y_train)
+        y_train = self.refacrtor_y_train(y_train)
 
         self.model = Sequential(self._get_layers(input_shape, output_shape, 'softmax'), name=self.model_name)
 
         if summery:
             self.model.summary()
         self.model.compile(
-            optimizer=self.optimizer,
+            optimizer='rmsprop',
             loss=self.loss,
             metrics=[self.metric],
         )

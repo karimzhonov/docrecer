@@ -3,12 +3,11 @@ from pathlib import Path
 
 
 class Serializer:
-
     def to_json(self):
         return serializer(self.__dict__)
 
     def save_as_json(self, path):
-        Path(path).write_text(json.dumps(self.to_json(), indent=4, ensure_ascii=False))
+        Path(path).write_text(json.dumps(self.to_json(), indent=4, ensure_ascii=False), errors='ignore')
 
 
 def serializer(obj):

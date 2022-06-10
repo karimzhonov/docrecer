@@ -53,8 +53,8 @@ class TesseractOcr(Ocr):
 
         return_data = RecognizedData()
         for image in images:
-            data = pytesseract.image_to_data(image, lang=self.config.tesseract_langs,
-                                             config=self.config.tesseract_config,
+            data = pytesseract.image_to_data(image, lang='eng+rus',
+                                             config='--psm 6',
                                              output_type=pytesseract.Output.DICT)
             page = self._parse_data(data)
             page.width = image.shape[1]

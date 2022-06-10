@@ -1,8 +1,9 @@
+import importlib
 from dataclasses import dataclass
-from docrecer.core.data import Data, is_other_document
-from docrecer.core.ocrs.response import PageData
-from docrecer.utils import is_include
-from docrecer.conf import SUPPORT_PATENTS
+from ..data import Data, is_other_document
+from ..ocrs.response import PageData
+from ...utils import is_include
+from ...conf import SUPPORT_PATENTS, SUPPORT_PASSPORTS
 
 
 @dataclass
@@ -52,6 +53,17 @@ class PatentData(Data):
 
     def _extrac_issue_date(self, data: PageData):
         pass
+
+    def parse_serial_number_passport(self, data, text):
+        for _class_path in SUPPORT_PASSPORTS:
+            *_module_path, _class_name = _class_path.split('.')
+            _module = importlib.import_module('.'.join(_module_path))
+            _class = getattr(_module, _class_name)
+            if _class().get_citizenship(data) == self.citizenship:
+                instance = _class()
+                instance.parse_serial_number(text)
+                self.passport_serial = instance.serial
+                self.passport_number = instance.number
 
     @staticmethod
     def is_patent_data(data: PageData) -> bool:
