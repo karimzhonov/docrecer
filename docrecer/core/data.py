@@ -71,7 +71,8 @@ class Data(Serializer):
             if is_include([word], item.text):
                 return item.words[0].points[0]
 
-    def _find_row_same_word(self, word, data, word_height=None, min_height=None, enter_avaible=False):
+    def _find_row_same_word(self, word, data, word_height=None, min_height=None,
+                            enter_avaible=False, include_word = False):
         """Find text in one area with word"""
         if word_height is None: word_height = self._word_height
         p1 = self._get_word_coordinate(word, data)
@@ -82,22 +83,29 @@ class Data(Serializer):
             for _word in row.words:
                 w_p1, w_p2, *_ = _word.points
                 if _y <= w_p1.y <= _y + word_height:
-                    if not is_include(word.split(' '), _word.text):
+                    if include_word:
                         if min_height is not None:
                             if abs(w_p1.y - w_p2.y) >= min_height:
                                 _text.append(_word.text)
                         else:
                             _text.append(_word.text)
+                    else:
+                        if not is_include(word.split(' '), _word.text):
+                            if min_height is not None:
+                                if abs(w_p1.y - w_p2.y) >= min_height:
+                                    _text.append(_word.text)
+                            else:
+                                _text.append(_word.text)
             if _text and enter_avaible: _text[-1] += '\n'
         _text = ' '.join(_text)
         _text = _text[1:] if _text.startswith(' ') else _text
         return _text
 
-    def _validate_date(self, text):
+    def _validate_date(self, text, patern = '%d.%m.%Y'):
         text = text[:-1] if text.endswith('.') else text
         text = text.replace(' ', '.').replace(',', '.')
         try:
-            return self._delete_chars(str(datetime.strptime(text, '%d.%m.%Y').date()))
+            return self._delete_chars(str(datetime.strptime(text, patern).date()))
         except ValueError as _exp:
             return None
 
@@ -139,5 +147,5 @@ class Data(Serializer):
 def is_other_document(data):
     keywords = (
         'чек', 'платеж', 'плательщик', 'перевод', 'опись', 'расписка', 'уведомлен', 'visas', 'viza', 'владелец',
-        'гражданина', 'this', 'анкета', 'анкеты', 'соискателя', 'работник', 'заполнить', 'полис', 'ЗАЯВЛЕНИЕ', 'банк')
+        'гражданина', 'анкета', 'анкеты', 'соискателя', 'работник', 'заполнить', 'полис', 'ЗАЯВЛЕНИЕ', 'банк')
     return is_include(keywords, data.text)

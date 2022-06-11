@@ -11,6 +11,7 @@ SUPPORT_PASSPORTS = [
     'docrecer.passports.TajikistanPasport',
     'docrecer.passports.UzbekistanInternationalPassport',
     'docrecer.passports.RussianPassport',
+    'docrecer.passports.UkrainePassport',
     'docrecer.passports.BasePassport'
 ]
 
