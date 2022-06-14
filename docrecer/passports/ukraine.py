@@ -36,13 +36,14 @@ class UkrainePassport(PassportData):
             d[1] = d[1].split('/')[1].capitalize()
             d = '-'.join(d)
             _date.append(d)
-        self.birth_date = _date[0]
-        self.issue_date = _date[1]
-        self.expiration_date = _date[2]
+        if not self.birth_date: self.birth_date = _date[0]
+        if not self.issue_date: self.issue_date = _date[1]
+        if not self.expiration_date: self.expiration_date = _date[2]
         # Extrac authority
-        for word in re.findall(r'[0-9]+', text):
-            if len(word) == 4:
-                self.authority = word
+        if not self.authority:
+            for word in re.findall(r'[0-9]+', text):
+                if len(word) == 4:
+                    self.authority = word
 
 
     def extract_data(self, data, config, image):

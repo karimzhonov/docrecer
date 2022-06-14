@@ -105,5 +105,5 @@ class PassportData(Data):
 
 
 def is_passport(data: PageData):
-    keywords = ('passpor', 'paspor', 'Шиноснома', 'Паспорт')
+    keywords = ('passpor', 'paspor', 'Шиноснома', 'Паспорт', '<<<')
     return is_include(keywords, data.text)

@@ -3,6 +3,8 @@ from .tajikistan import TajikistanPasport
 from .uzbekistan import UzbekistanInternationalPassport
 from .russia import RussianPassport
 from .ukraine import UkrainePassport
+from .kyrgyz import KyrgyzPassport
+
 
 class BasePassport(PassportData):
     @classmethod

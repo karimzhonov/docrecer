@@ -4,6 +4,7 @@ from .serializer import Serializer
 from ..utils import is_include, import_class
 from .logger import logger
 
+
 class Data(Serializer):
     _top = 0
     _left = 0
@@ -43,6 +44,7 @@ class Data(Serializer):
 
     @staticmethod
     def _delete_chars(text: str, chars='!@#$%^&*()`~[]{}№«'):
+        text = text[1:] if text.startswith(' ') else text
         for char in chars:
             text = text.replace(char, '')
         return text.capitalize()
@@ -72,7 +74,7 @@ class Data(Serializer):
                 return item.words[0].points[0]
 
     def _find_row_same_word(self, word, data, word_height=None, min_height=None,
-                            enter_avaible=False, include_word = False):
+                            enter_avaible=False, include_word=False):
         """Find text in one area with word"""
         if word_height is None: word_height = self._word_height
         p1 = self._get_word_coordinate(word, data)
@@ -100,8 +102,24 @@ class Data(Serializer):
         _text = ' '.join(_text)
         _text = _text[1:] if _text.startswith(' ') else _text
         return _text
+    @staticmethod
+    def _get_all_text(data, min_height=None, enter_avaible = None):
+        _text = []
+        for row in data.rows:
+            for _word in row.words:
+                w_p1, w_p2, *_ = _word.points
+                if min_height is not None:
+                    if abs(w_p1.y - w_p2.y) >= min_height:
+                        _text.append(_word.text)
+                else:
+                    _text.append(_word.text)
+            if _text and enter_avaible: _text[-1] += '\n'
+        _text = ' '.join(_text)
+        _text = _text[1:] if _text.startswith(' ') else _text
+        return _text
 
-    def _validate_date(self, text, patern = '%d.%m.%Y'):
+    def _validate_date(self, text: str, patern='%d.%m.%Y'):
+        text = text[1:] if text.startswith(' ') else text
         text = text[:-1] if text.endswith('.') else text
         text = text.replace(' ', '.').replace(',', '.')
         try:
@@ -110,18 +128,21 @@ class Data(Serializer):
             return None
 
     def _validate_number(self, text):
+        text = text[1:] if text.startswith(' ') else text
         try:
             return self._delete_chars(str(int(text)))
         except ValueError:
             pass
+
     @staticmethod
-    def _validate_gender(text):
-        if 'm' in text.lower():
+    def _validate_gender(text, mf='mf'):
+        if mf[0] in text.lower():
             return 'Male'
-        elif 'f' in text.lower():
+        elif mf[1] in text.lower():
             return 'Female'
 
-    def _find_row_by_delta_height(self, delta_height, data, word_height: int = None, min_height=None, enter_avaible = False):
+    def _find_row_by_delta_height(self, delta_height, data, word_height: int = None, min_height=None,
+                                  enter_avaible=False):
         """
         Find text by delta height from self._top
         word_height - height of area where extrac text
