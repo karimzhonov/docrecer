@@ -21,6 +21,12 @@ class BaseRecognizer:
         filename = Path(self.source_file.parts[-1]).with_suffix('.json')
         return self.output_dir.joinpath(filename)
 
+    def get_output_txtpath(self):
+        if self.output_dir is None:
+            raise ValueError(f'output_dir is None')
+        filename = Path(self.source_file.parts[-1]).with_suffix('.txt')
+        return self.output_dir.joinpath(filename)
+
     def get_ocr_data_path(self):
         if self.output_dir is None:
             raise ValueError(f'output_dir is None')

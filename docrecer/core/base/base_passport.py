@@ -55,6 +55,10 @@ class PassportData(Data):
 
     def _extrac_gender(self, data):
         self.gender = self._delete_chars(self._search_from_entities(data, 'gender'))
+        if 'fe' in self.gender.lower():
+            self.gender = 'Женский'
+        else:
+            self.gender = 'Мужской'
 
     def _extrac_birth_place(self, data):
         self.birth_place = self._delete_chars(self._search_from_entities(data, 'birth_place'))

@@ -123,7 +123,7 @@ class Data(Serializer):
         text = text[:-1] if text.endswith('.') else text
         text = text.replace(' ', '.').replace(',', '.')
         try:
-            return self._delete_chars(str(datetime.strptime(text, patern).date()))
+            return self._delete_chars(str(datetime.strptime(text, patern).date().strftime('%d.%m.%Y')))
         except ValueError as _exp:
             return None
 
@@ -137,9 +137,9 @@ class Data(Serializer):
     @staticmethod
     def _validate_gender(text, mf='mf'):
         if mf[0] in text.lower():
-            return 'Male'
+            return 'Мужской'
         elif mf[1] in text.lower():
-            return 'Female'
+            return 'Женский'
 
     def _find_row_by_delta_height(self, delta_height, data, word_height: int = None, min_height=None,
                                   enter_avaible=False):

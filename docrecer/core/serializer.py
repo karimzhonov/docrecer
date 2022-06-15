@@ -1,16 +1,20 @@
 import json
 from pathlib import Path
+from types import NoneType
 
 
 class Serializer:
-    def to_json(self):
-        return serializer(self.__dict__)
+    def to_json(self, enable_none = True):
+        return serializer(self.__dict__, enable_none)
 
-    def save_as_json(self, path):
-        Path(path).write_text(json.dumps(self.to_json(), indent=4, ensure_ascii=False), errors='ignore')
+    def save_as_json(self, path, enable_none = True):
+        Path(path).write_text(json.dumps(self.to_json(enable_none), indent=4, ensure_ascii=False), errors='ignore')
 
 
-def serializer(obj):
+def serializer(obj, enable_none = True):
+    if not enable_none:
+        if isinstance(obj, NoneType):
+            return '-'
     if isinstance(obj, Serializer):
         return obj.to_json()
     elif isinstance(obj, (list, tuple, set)):
@@ -24,7 +28,7 @@ def serializer(obj):
 
 
 def dict_serializer(d: dict):
-    return {key: serializer(value) for key, value in d.items() if not key.startswith('_')}
+    return {key: serializer(value) for key, value in d.items() if (not key.startswith('_')) and value}
 
 
 def list_serializer(l):

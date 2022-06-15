@@ -52,6 +52,7 @@ def file_recognizer(input_path: str or _Path or np.array, config: Config, output
         # Write resualt
         if pdf_data.output_dir:
             pdf_data.persanal_data.save_as_json(pdf_data.get_output_jsonpath())
+            pdf_data.persanal_data.save_as_txt(pdf_data.get_output_txtpath())
             _shutil.copy(pdf_data.source_file, pdf_data.get_output_path())
         return pdf_data.persanal_data.to_json()
     elif (isinstance(input_path, _Path) and input_path.suffix in ('.png', '.jpg', '.jpeg')) \
@@ -61,7 +62,7 @@ def file_recognizer(input_path: str or _Path or np.array, config: Config, output
         image_data.recognize(config)
         # Write result
         if image_data.output_dir:
-            image_data.persanal_data.save_as_json(image_data.get_output_jsonpath())
+            image_data.persanal_data.save_as_json(image_data.get_output_jsonpath(), False)
             _shutil.copy(image_data.source_file, image_data.get_output_path())
         return image_data.persanal_data.to_json()
     else:
